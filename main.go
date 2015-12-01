@@ -15,7 +15,7 @@ import (
 
 const (
 	sshfsId       = "_sshfs"
-	socketAddress = "/usr/share/docker/plugins/sshfs.sock"
+	socketAddress = "/run/docker/plugins/sshfs.sock"
 )
 
 var (
