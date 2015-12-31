@@ -1,6 +1,6 @@
 # Docker volume plugin for sshFS
 
-This plugin allows you to mount remove folder using sshfs in your container easily.
+This plugin allows you to mount remote folder using sshfs in your container easily.
 
 ## Installation
 
