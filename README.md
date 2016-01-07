@@ -28,7 +28,7 @@ Due to a limitation in the docker cli, use `#` instead of `:` to specify the hos
 
 ## THANKS
 
-https://github.com/calavera/dkvolume
+https://github.com/docker/go-plugins-helpers
 
 ## LICENSE
 
