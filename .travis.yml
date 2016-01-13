@@ -1,0 +1,15 @@
+language: go
+go:
+  - 1.4.2
+sudo: false
+env:
+  - "PATH=/home/travis/gopath/bin:$PATH"
+script:
+  - GOOS=linux GOARCH=amd64 go build -v
+deploy:
+  provider: releases
+  api_key: "${GITHUB_TOKEN:?}"
+  file: "docker-volume-sshfs"
+  skip_cleanup: true
+  on:
+    tags: true
