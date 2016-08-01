@@ -2,6 +2,8 @@
 
 This plugin allows you to mount remote folder using sshfs in your container easily.
 
+[![TravisCI](https://travis-ci.org/vieux/docker-volume-sshfs.svg)](https://travis-ci.org/vieux/docker-volume-sshfs)
+
 ## Installation
 
 Using go (until we get proper binaries):
