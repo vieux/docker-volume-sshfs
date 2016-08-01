@@ -35,8 +35,8 @@ type sshfsDriver struct {
 	volumes map[string]*volumeName
 }
 
-func newSshfsDriver(root string) sshfsDriver {
-	d := sshfsDriver{
+func newSshfsDriver(root string) *sshfsDriver {
+	d := &sshfsDriver{
 		root:    root,
 		volumes: map[string]*volumeName{},
 	}
@@ -44,11 +44,11 @@ func newSshfsDriver(root string) sshfsDriver {
 	return d
 }
 
-func (d sshfsDriver) Create(r volume.Request) volume.Response {
+func (d *sshfsDriver) Create(r volume.Request) volume.Response {
 	return volume.Response{}
 }
 
-func (d sshfsDriver) Remove(r volume.Request) volume.Response {
+func (d *sshfsDriver) Remove(r volume.Request) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -61,11 +61,11 @@ func (d sshfsDriver) Remove(r volume.Request) volume.Response {
 	return volume.Response{}
 }
 
-func (d sshfsDriver) Path(r volume.Request) volume.Response {
+func (d *sshfsDriver) Path(r volume.Request) volume.Response {
 	return volume.Response{Mountpoint: d.mountpoint(r.Name)}
 }
 
-func (d sshfsDriver) Mount(r volume.MountRequest) volume.Response {
+func (d *sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -101,7 +101,7 @@ func (d sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 	return volume.Response{Mountpoint: m}
 }
 
-func (d sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
+func (d *sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -121,7 +121,7 @@ func (d sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
 	return volume.Response{}
 }
 
-func (d sshfsDriver) Get(r volume.Request) volume.Response {
+func (d *sshfsDriver) Get(r volume.Request) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -132,7 +132,7 @@ func (d sshfsDriver) Get(r volume.Request) volume.Response {
 	return volume.Response{Err: fmt.Sprintf("Unable to find volume mounted on %s", m)}
 }
 
-func (d sshfsDriver) List(r volume.Request) volume.Response {
+func (d *sshfsDriver) List(r volume.Request) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	var vols []*volume.Volume
@@ -142,7 +142,7 @@ func (d sshfsDriver) List(r volume.Request) volume.Response {
 	return volume.Response{Volumes: vols}
 }
 
-func (d sshfsDriver) Capabilities(r volume.Request) volume.Response {
+func (d *sshfsDriver) Capabilities(r volume.Request) volume.Response {
 	return volume.Response{Capabilities: volume.Capability{Scope: "global"}}
 }
 
