@@ -65,7 +65,7 @@ func (d sshfsDriver) Path(r volume.Request) volume.Response {
 	return volume.Response{Mountpoint: d.mountpoint(r.Name)}
 }
 
-func (d sshfsDriver) Mount(r volume.Request) volume.Response {
+func (d sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -101,7 +101,7 @@ func (d sshfsDriver) Mount(r volume.Request) volume.Response {
 	return volume.Response{Mountpoint: m}
 }
 
-func (d sshfsDriver) Unmount(r volume.Request) volume.Response {
+func (d sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	m := d.mountpoint(r.Name)
@@ -140,6 +140,10 @@ func (d sshfsDriver) List(r volume.Request) volume.Response {
 		vols = append(vols, &volume.Volume{Name: v.name, Mountpoint: d.mountpoint(v.name)})
 	}
 	return volume.Response{Volumes: vols}
+}
+
+func (d sshfsDriver) Capabilities(r volume.Request) volume.Response {
+	return volume.Response{Capabilities: volume.Capability{Scope: "local"}}
 }
 
 func (d *sshfsDriver) mountpoint(name string) string {
