@@ -14,16 +14,16 @@ import (
 )
 
 const (
-	sshfsId       = "_sshfs"
+	sshfsID       = "_sshfs"
 	socketAddress = "/run/docker/plugins/sshfs.sock"
 )
 
 var (
-	defaultDir = filepath.Join(volume.DefaultDockerRootDirectory, sshfsId)
+	defaultDir = filepath.Join(volume.DefaultDockerRootDirectory, sshfsID)
 	root       = flag.String("root", defaultDir, "SshFS volumes root directory")
 )
 
-type volume_name struct {
+type volumeName struct {
 	name        string
 	connections int
 }
@@ -32,13 +32,13 @@ type sshfsDriver struct {
 	sync.Mutex
 
 	root    string
-	volumes map[string]*volume_name
+	volumes map[string]*volumeName
 }
 
 func newSshfsDriver(root string) sshfsDriver {
 	d := sshfsDriver{
 		root:    root,
-		volumes: map[string]*volume_name{},
+		volumes: map[string]*volumeName{},
 	}
 
 	return d
@@ -95,7 +95,7 @@ func (d sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 		return volume.Response{Err: err.Error()}
 	}
 
-	d.volumes[m] = &volume_name{name: r.Name, connections: 1}
+	d.volumes[m] = &volumeName{name: r.Name, connections: 1}
 
 	log.Printf("Mounting volume %s on %s\n", r.Name, m)
 	return volume.Response{Mountpoint: m}
