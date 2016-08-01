@@ -121,6 +121,27 @@ func (d sshfsDriver) Unmount(r volume.Request) volume.Response {
 	return volume.Response{}
 }
 
+func (d sshfsDriver) Get(r volume.Request) volume.Response {
+	d.Lock()
+	defer d.Unlock()
+	m := d.mountpoint(r.Name)
+	if s, ok := d.volumes[m]; ok {
+		return volume.Response{Volume: &volume.Volume{Name: s.name, Mountpoint: d.mountpoint(s.name)}}
+	}
+
+	return volume.Response{Err: fmt.Sprintf("Unable to find volume mounted on %s", m)}
+}
+
+func (d sshfsDriver) List(r volume.Request) volume.Response {
+	d.Lock()
+	defer d.Unlock()
+	var vols []*volume.Volume
+	for _, v := range d.volumes {
+		vols = append(vols, &volume.Volume{Name: v.name, Mountpoint: d.mountpoint(v.name)})
+	}
+	return volume.Response{Volumes: vols}
+}
+
 func (d *sshfsDriver) mountpoint(name string) string {
 	return filepath.Join(d.root, name)
 }
