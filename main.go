@@ -143,7 +143,7 @@ func (d sshfsDriver) List(r volume.Request) volume.Response {
 }
 
 func (d sshfsDriver) Capabilities(r volume.Request) volume.Response {
-	return volume.Response{Capabilities: volume.Capability{Scope: "local"}}
+	return volume.Response{Capabilities: volume.Capability{Scope: "global"}}
 }
 
 func (d *sshfsDriver) mountpoint(name string) string {
