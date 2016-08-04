@@ -13,4 +13,4 @@ RUN set -ex \
     && go install --ldflags '-extldflags "-static"' \
     && apk del .build-deps
 
-CMD ["/docker-volume-sshfs"]
+CMD ["/go/bin/docker-volume-sshfs"]
