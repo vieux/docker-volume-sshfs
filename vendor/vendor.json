@@ -1,0 +1,61 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "vQbjmSlhdSQcm5XiQElWSWVjBI8=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "446d1c146faa8ed3f4218f056fcd165f6bcfda81",
+			"revisionTime": "2015-12-04T14:14:43Z"
+		},
+		{
+			"checksumSHA1": "ftBtTa6+I7MwOk6zTGvIawQs4qA=",
+			"path": "github.com/coreos/go-systemd/activation",
+			"revision": "fa8411dcbcbad22b8542b0433914ef68b123f989",
+			"revisionTime": "2016-07-28T00:04:19Z"
+		},
+		{
+			"checksumSHA1": "uslisHQFxjW+mwWQB8UpJbqNpo8=",
+			"path": "github.com/coreos/go-systemd/util",
+			"revision": "fa8411dcbcbad22b8542b0433914ef68b123f989",
+			"revisionTime": "2016-07-28T00:04:19Z"
+		},
+		{
+			"checksumSHA1": "PqfZ1nPth0u742gRe4ochQ16umQ=",
+			"path": "github.com/coreos/pkg/dlopen",
+			"revision": "3ac0863d7acf3bc44daf49afef8919af12f704ef",
+			"revisionTime": "2016-07-27T23:37:14Z"
+		},
+		{
+			"checksumSHA1": "rP+yDhI9rrjJcXUREGLUFkvqD0g=",
+			"path": "github.com/docker/go-connections/sockets",
+			"revision": "34b5052da6b11e27f5f2e357b38b571ddddd3928",
+			"revisionTime": "2016-02-12T23:19:11Z"
+		},
+		{
+			"checksumSHA1": "Ourfr7SBm3lJDkOKLNbR472sjVA=",
+			"path": "github.com/docker/go-plugins-helpers/sdk",
+			"revision": "5030c3ee1a1f7db91a2c2768a5aaf35ad715ee6e",
+			"revisionTime": "2016-08-01T21:12:26Z"
+		},
+		{
+			"checksumSHA1": "50cXlRayb+MlKuJj4n7kEO4dScA=",
+			"path": "github.com/docker/go-plugins-helpers/volume",
+			"revision": "5030c3ee1a1f7db91a2c2768a5aaf35ad715ee6e",
+			"revisionTime": "2016-08-01T21:12:26Z"
+		},
+		{
+			"checksumSHA1": "mZiiJeCIbpOaAoEBvzj4NsR3kp0=",
+			"path": "github.com/opencontainers/runc/libcontainer/user",
+			"revision": "2c3115481ee1782ad687a9e0b4834f89533c2acf",
+			"revisionTime": "2016-02-23T08:00:19Z"
+		},
+		{
+			"checksumSHA1": "KfGbNTddygOy3Ai1rBG4it6A3JM=",
+			"path": "golang.org/x/net/proxy",
+			"revision": "4fd4a9fed55e5bdee4a89d6406c2eabe38b60300",
+			"revisionTime": "2016-01-11T01:52:05Z"
+		}
+	],
+	"rootPath": "/github.com/vieux/docker-volume-sshfs"
+}
