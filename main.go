@@ -216,5 +216,5 @@ func main() {
 	d := newSshfsDriver(*root)
 	h := volume.NewHandler(d)
 	logrus.Info("listening on %s", socketAddress)
-	logrus.Error(h.ServeUnix("root", socketAddress))
+	logrus.Error(h.ServeUnix("", socketAddress))
 }
