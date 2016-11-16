@@ -1,3 +1,5 @@
+all: docker rootfs
+
 docker:
 	docker build -t builder -f Dockerfile.dev .
 	docker create --name tmp builder
@@ -10,6 +12,9 @@ rootfs:
 	mkdir -p plugin/rootfs
 	docker create --name tmp vieux/sshfs:rootfs
 	docker export tmp | tar -x -C ./plugin/rootfs
+	sudo cp config.json ./plugin/
+	sudo chown -R root ./plugin/
+	sudo chgrp -R root ./plugin/
 	docker rm -vf tmp
 
-all: docker rootfs
+

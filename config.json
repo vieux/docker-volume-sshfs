@@ -1,0 +1,30 @@
+{
+	"description": "sshFS plugin for Docker",
+	"documentation": "https://docs.docker.com/engine/extend/plugins/",
+	"entrypoint": ["/docker-volume-sshfs"],
+	"network": {
+		"type": "host"
+	},
+	"interface" : {
+		"types": ["docker.volumedriver/1.0"],
+		"socket": "sshfs.sock"
+	},
+        "linux": {
+	    "capabilities": ["CAP_SYS_ADMIN"]
+	},
+        "devices": [
+	    {
+                "name":"fuse",
+		"path":"/dev/fuse"
+	    }
+	],
+	"env": [
+	    {
+		"name":"DEBUG",
+		"settable":["value"],
+		"value":"0"
+	    }
+	]
+}
+
+

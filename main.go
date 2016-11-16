@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"sync"
 
 	"github.com/Sirupsen/logrus"
@@ -210,7 +211,10 @@ func responseError(err string) volume.Response {
 }
 
 func main() {
-	logrus.SetLevel(logrus.DebugLevel)
+	debug := os.Getenv("DEBUG")
+	if ok, _ := strconv.ParseBool(debug); ok {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 	flag.Parse()
 
 	d := newSshfsDriver(*root)
