@@ -17,7 +17,7 @@ $ docker plugin install vieux/sshfs
 2 - Create a volume
 
 ```
-$ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o password=<password> --name sshvolume
+$ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o password=<password> sshvolume
 sshvolume
 $ docker volume ls
 DRIVER              VOLUME NAME
@@ -47,7 +47,7 @@ $ sudo docker-volume-sshfs # you have to manage the lifecycle of the plugins (e.
 2 - Create a volume
 
 ```
-$ docker volume create -d sshfs -o sshcmd=<user@host:path> -o password=<password> --name sshvolume
+$ docker volume create -d sshfs -o sshcmd=<user@host:path> -o password=<password> sshvolume
 sshvolume
 $ docker volume ls
 DRIVER              VOLUME NAME
