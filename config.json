@@ -10,14 +10,13 @@
 		"socket": "sshfs.sock"
 	},
         "linux": {
-	    "capabilities": ["CAP_SYS_ADMIN"]
-	},
-        "devices": [
-	    {
-                "name":"fuse",
+	    "capabilities": ["CAP_SYS_ADMIN"],
+	    "devices": [
+		{
 		"path":"/dev/fuse"
-	    }
-	],
+		}
+	    ]
+	},
 	"env": [
 	    {
 		"name":"DEBUG",
