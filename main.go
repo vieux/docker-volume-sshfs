@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/md5"
-	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,11 +16,6 @@ import (
 const (
 	sshfsID       = "_sshfs"
 	socketAddress = "/run/docker/plugins/sshfs.sock"
-)
-
-var (
-	defaultDir = filepath.Join(volume.DefaultDockerRootDirectory, sshfsID)
-	root       = flag.String("root", defaultDir, "SshFS volumes root directory")
 )
 
 type sshfsVolume struct {
@@ -215,9 +209,8 @@ func main() {
 	if ok, _ := strconv.ParseBool(debug); ok {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
-	flag.Parse()
 
-	d := newSshfsDriver(*root)
+	d := newSshfsDriver(filepath.Join("/mnt", sshfsID))
 	h := volume.NewHandler(d)
 	logrus.Infof("listening on %s", socketAddress)
 	logrus.Error(h.ServeUnix("", socketAddress))
