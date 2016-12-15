@@ -34,6 +34,8 @@ type sshfsDriver struct {
 }
 
 func newSshfsDriver(root string) *sshfsDriver {
+	logrus.WithField("method", "new driver").Debug(root)
+
 	d := &sshfsDriver{
 		root:    root,
 		volumes: make(map[string]*sshfsVolume),

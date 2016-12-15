@@ -17,6 +17,7 @@
 		}
 	    ]
 	},
+	"propagatedmount": "/mnt",
 	"env": [
 	    {
 		"name":"DEBUG",
