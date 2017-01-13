@@ -18,6 +18,17 @@
 	    ]
 	},
 	"propagatedmount": "/mnt",
+	"mounts": [
+		{
+		"name": "KeyPath",
+		"description": "Path to SSH keys",
+		"source": "/tmp",
+		"destination": "/tmp/sshfs",
+		"type": "bind",
+		"options": ["rbind","ro"],
+		"settable":["source"]
+		}
+	],
 	"env": [
 	    {
 		"name":"DEBUG",

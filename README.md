@@ -6,10 +6,70 @@ This plugin allows you to mount remote folder using sshfs in your container easi
 
 ## Usage
 
+### Use with SSH keys
 1 - Install the plugin
 
 ```
 $ docker plugin install vieux/sshfs # or docker plugin install vieux/sshfs DEBUG=1
+Plugin "vieux/sshfs" is requesting the following privileges:
+ - network: [host]
+ - mount: [/tmp]
+ - device: [/dev/fuse]
+ - capabilities: [CAP_SYS_ADMIN]
+Do you grant the above permissions? [y/N] y
+latest: Pulling from vieux/sshfs
+e248a6530152: Download complete
+Status: Downloaded newer image for vieux/sshfs:latest
+Installed plugin vieux/sshfs
+```
+
+2 - Configure driver to point to your SSH keys
+
+_NOTE_: The plugin defaults to looking for SSH keys in `/tmp`. You can copy your `<identity_file_name>` to `/tmp` and omit this step, e.g.
+`cp $HOME/.ssh/id_rsa /tmp/.`
+
+```
+$ docker plugin disable vieux/sshfs
+vieux/sshfs
+
+$ docker plugin set vieux/sshfs KeyPath.source=$HOME/.ssh
+
+$ docker plugin enable vieux/sshfs
+vieux/sshfs
+```
+3 - Create a volume
+
+```
+$ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o identity=<identity_file_name> sshvolume
+sshvolume
+
+$ docker volume ls
+DRIVER              VOLUME NAME
+vieux/sshfs         sshvolume
+```
+
+4 - Use the volume
+
+```
+$ docker run --rm -it -v sshvolume:<path> busybox ls <path>
+```
+
+### Alternatively, use with passwords instead of SSH keys
+1 - Install the plugin
+
+```
+$ docker plugin install vieux/sshfs # or docker plugin install vieux/sshfs DEBUG=1
+Plugin "vieux/sshfs" is requesting the following privileges:
+ - network: [host]
+ - mount: [/tmp]
+ - device: [/dev/fuse]
+ - capabilities: [CAP_SYS_ADMIN]
+Do you grant the above permissions? [y/N] y
+latest: Pulling from vieux/sshfs
+e248a6530152: Download complete
+Status: Downloaded newer image for vieux/sshfs:latest
+Installed plugin vieux/sshfs
+
 ```
 
 2 - Create a volume
@@ -17,21 +77,31 @@ $ docker plugin install vieux/sshfs # or docker plugin install vieux/sshfs DEBUG
 ```
 $ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o password=<password> sshvolume
 sshvolume
+
 $ docker volume ls
 DRIVER              VOLUME NAME
-local               2d75de358a70ba469ac968ee852efd4234b9118b7722ee26a1c5a90dcaea6751
-local               842a765a9bb11e234642c933b3dfc702dee32b73e0cf7305239436a145b89017
-local               9d72c664cbd20512d4e3d5bb9b39ed11e4a632c386447461d48ed84731e44034
-local               be9632386a2d396d438c9707e261f86fd9f5e72a7319417901d84041c8f14a4d
-local               e1496dfe4fa27b39121e4383d1b16a0a7510f0de89f05b336aab3c0deb4dda0e
 vieux/sshfs         sshvolume
 ```
 
 3 - Use the volume
 
 ```
-$ docker run -it -v sshvolume:<path> busybox ls <path>
+$ docker run --rm -it -v sshvolume:<path> busybox ls <path>
 ```
+
+### Removing the plugin
+_NOTE_: You must remove any volumes created with this plugin prior to removing the plugin itself.
+
+```
+$ docker plugin disable vieux/sshfs
+vieux/sshfs
+
+$ docker plugin rm vieux/sshfs
+vieux/sshfs
+```
+
+## Notes
+* When using the SSH key approach, the directory where the keys are located must be on the same host as the docker engine.
 
 ## THANKS
 
