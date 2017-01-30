@@ -5,7 +5,7 @@ all: clean docker rootfs create
 
 clean:
 	@echo "### rm ./plugin"
-	@sudo rm -rf ./plugin
+	@rm -rf ./plugin
 
 docker:
 	@echo "### docker build: builder image"
@@ -24,16 +24,14 @@ rootfs:
 	@docker create --name tmp ${PLUGIN_NAME}:rootfs
 	@docker export tmp | tar -x -C ./plugin/rootfs
 	@echo "### copy config.json to ./plugin/"
-	@sudo cp config.json ./plugin/
-	@sudo chown -R root ./plugin/
-	@sudo chgrp -R root ./plugin/
+	@cp config.json ./plugin/
 	@docker rm -vf tmp
 
 create:
 	@echo "### remove existing plugin ${PLUGIN_NAME}:${PLUGIN_TAG} if exists"
-	@sudo docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG} || true
+	@docker plugin rm -f ${PLUGIN_NAME}:${PLUGIN_TAG} || true
 	@echo "### create new plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
-	@sudo docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
+	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
 
 enable:
 	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
