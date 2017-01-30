@@ -3,8 +3,10 @@ package main
 import (
 	"crypto/md5"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
 	"sync"
@@ -16,11 +18,13 @@ import (
 const (
 	sshfsID       = "_sshfs"
 	socketAddress = "/run/docker/plugins/sshfs.sock"
+	certPath      = "/tmp/sshfs"
 )
 
 type sshfsVolume struct {
-	password string
-	sshcmd   string
+	password     string
+	sshcmd       string
+	identityFile string
 
 	mountpoint  string
 	connections int
@@ -53,8 +57,22 @@ func (d *sshfsDriver) Create(r volume.Request) volume.Response {
 	if r.Options == nil || r.Options["sshcmd"] == "" {
 		return responseError("ssh option required")
 	}
+	if r.Options["password"] != "" && r.Options["identity"] != "" {
+		return responseError("Can not specify both password and identity file")
+	}
 	v.sshcmd = r.Options["sshcmd"]
 	v.password = r.Options["password"]
+	if r.Options["identity"] != "" {
+		filename := path.Join(certPath, r.Options["identity"])
+		_, err := ioutil.ReadFile(filename)
+		if err != nil {
+			errMsg := fmt.Sprintf("Failed to read IdentityFile %s", filename)
+			return responseError(errMsg)
+		}
+		logrus.Debugf("Using identity file %s", filename)
+		v.identityFile = filename
+	}
+
 	v.mountpoint = filepath.Join(d.root, fmt.Sprintf("%x", md5.Sum([]byte(v.sshcmd))))
 
 	d.volumes[r.Name] = v
@@ -187,9 +205,14 @@ func (d *sshfsDriver) Capabilities(r volume.Request) volume.Response {
 }
 
 func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
-	cmd := fmt.Sprintf("sshfs -oStrictHostKeyChecking=no %s %s", v.sshcmd, v.mountpoint)
-	if v.password != "" {
-		cmd = fmt.Sprintf("echo %s | %s -o workaround=rename -o password_stdin", v.password, cmd)
+	var cmd string
+	if v.identityFile != "" {
+		cmd = fmt.Sprintf("sshfs -oStrictHostKeyChecking=no -oIdentityFile=%s %s %s", v.identityFile, v.sshcmd, v.mountpoint)
+	} else {
+		cmd = fmt.Sprintf("sshfs -oStrictHostKeyChecking=no %s %s", v.sshcmd, v.mountpoint)
+		if v.password != "" {
+			cmd = fmt.Sprintf("echo %s | %s -o workaround=rename -o password_stdin", v.password, cmd)
+		}
 	}
 	logrus.Debug(cmd)
 	return exec.Command("sh", "-c", cmd).Run()
