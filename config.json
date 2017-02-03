@@ -17,6 +17,14 @@
 		}
 	    ]
 	},
+	"mounts": [
+		{
+			"source": "/tmp/sshfs",
+			"destination": "/mnt/_sshfs/state",
+			"options": ["rbind"],
+			"type": "bind"
+		}
+	],
 	"propagatedmount": "/mnt",
 	"env": [
 	    {
