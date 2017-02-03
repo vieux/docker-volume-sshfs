@@ -39,7 +39,7 @@ func newSshfsDriver(root string) (*sshfsDriver, error) {
 
 	d := &sshfsDriver{
 		root:      filepath.Join(root, "volumes"),
-		statePath: filepath.Join(root, "state", "state.json"),
+		statePath: filepath.Join(root, "state", "sshfs-state.json"),
 		volumes:   map[string]*sshfsVolume{},
 	}
 

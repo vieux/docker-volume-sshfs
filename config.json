@@ -1,38 +1,46 @@
 {
-	"description": "sshFS plugin for Docker",
-	"documentation": "https://docs.docker.com/engine/extend/plugins/",
-	"entrypoint": ["/docker-volume-sshfs"],
-	"network": {
-		"type": "host"
-	},
-	"interface" : {
-		"types": ["docker.volumedriver/1.0"],
-		"socket": "sshfs.sock"
-	},
-        "linux": {
-	    "capabilities": ["CAP_SYS_ADMIN"],
-	    "devices": [
-		{
-		"path":"/dev/fuse"
-		}
-	    ]
-	},
-	"mounts": [
-		{
-			"source": "/tmp/sshfs",
-			"destination": "/mnt/state",
-			"options": ["rbind"],
-			"type": "bind"
-		}
-	],
-	"propagatedmount": "/mnt/volumes",
-	"env": [
-	    {
-		"name":"DEBUG",
-		"settable":["value"],
-		"value":"0"
-	    }
-	]
+    "description": "sshFS plugin for Docker",
+    "documentation": "https://docs.docker.com/engine/extend/plugins/",
+    "entrypoint": [
+        "/docker-volume-sshfs"
+    ],
+    "env": [
+        {
+            "name": "DEBUG",
+            "settable": [
+                "value"
+            ],
+            "value": "0"
+        }
+    ],
+    "interface": {
+        "socket": "sshfs.sock",
+        "types": [
+            "docker.volumedriver/1.0"
+        ]
+    },
+    "linux": {
+        "capabilities": [
+            "CAP_SYS_ADMIN"
+        ],
+        "devices": [
+            {
+                "path": "/dev/fuse"
+            }
+        ]
+    },
+    "mounts": [
+        {
+            "destination": "/mnt/state",
+            "options": [
+                "rbind"
+            ],
+            "source": "/var/lib/docker/plugins/",
+            "type": "bind"
+        }
+    ],
+    "network": {
+        "type": "host"
+    },
+    "propagatedmount": "/mnt/volumes"
 }
-
-
