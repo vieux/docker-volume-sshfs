@@ -4,6 +4,8 @@ import (
 	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,59 +16,58 @@ import (
 	"github.com/docker/go-plugins-helpers/volume"
 )
 
-const (
-	sshfsID       = "_sshfs"
-	socketAddress = "/run/docker/plugins/sshfs.sock"
-)
+const socketAddress = "/run/docker/plugins/sshfs.sock"
 
 type sshfsVolume struct {
 	Password string
 	Sshcmd   string
 
 	Mountpoint  string
-	Connections int
+	connections int
 }
 
 type sshfsDriver struct {
 	sync.RWMutex
 
-	root    string
-	volumes map[string]*sshfsVolume
+	root      string
+	statePath string
+	volumes   map[string]*sshfsVolume
 }
 
-func statePath(root string) string {
-	return filepath.Join(root, "state", "state.json")
-}
-
-func newSshfsDriver(root string) *sshfsDriver {
+func newSshfsDriver(root string) (*sshfsDriver, error) {
 	logrus.WithField("method", "new driver").Debug(root)
 
-	d := &sshfsDriver{root: root, volumes: map[string]*sshfsVolume{}}
-
-	path := statePath(root)
-	f, err := os.Open(path)
-	defer f.Close()
-	if err == nil {
-		if err := json.NewDecoder(f).Decode(&d.volumes); err != nil {
-			logrus.WithField("loadstate", path).Error(err)
-		}
-	} else if !os.IsNotExist(err) {
-		panic(err)
+	d := &sshfsDriver{
+		root:      filepath.Join(root, "volumes"),
+		statePath: filepath.Join(root, "state", "state.json"),
+		volumes:   map[string]*sshfsVolume{},
 	}
 
-	return d
+	data, err := ioutil.ReadFile(d.statePath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			logrus.WithField("statePath", d.statePath).Debug("no state found")
+		} else {
+			return nil, err
+		}
+	} else {
+		if err := json.Unmarshal(data, &d.volumes); err != nil {
+			return nil, err
+		}
+	}
+
+	return d, nil
 }
 
 func (d *sshfsDriver) saveState() {
-	path := statePath(d.root)
-	f, err := os.Create(path)
+	data, err := json.Marshal(d.volumes)
 	if err != nil {
-		logrus.WithField("savestate", path).Error(err)
+		logrus.WithField("statePath", d.statePath).Error(err)
 		return
 	}
-	defer f.Close()
-	if err := json.NewEncoder(f).Encode(d.volumes); err != nil {
-		logrus.WithField("savestate", path).Error(err)
+
+	if err := ioutil.WriteFile(d.statePath, data, 0644); err != nil {
+		logrus.WithField("savestate", d.statePath).Error(err)
 	}
 }
 
@@ -101,7 +102,7 @@ func (d *sshfsDriver) Remove(r volume.Request) volume.Response {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
 
-	if v.Connections == 0 {
+	if v.connections == 0 {
 		if err := os.RemoveAll(v.Mountpoint); err != nil {
 			return responseError(err.Error())
 		}
@@ -137,8 +138,8 @@ func (d *sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
 
-	if v.Connections > 0 {
-		v.Connections++
+	if v.connections > 0 {
+		v.connections++
 		return volume.Response{Mountpoint: v.Mountpoint}
 	}
 
@@ -171,13 +172,13 @@ func (d *sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
 	if !ok {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
-	if v.Connections <= 1 {
+	if v.connections <= 1 {
 		if err := d.unmountVolume(v.Mountpoint); err != nil {
 			return responseError(err.Error())
 		}
-		v.Connections = 0
+		v.connections = 0
 	} else {
-		v.Connections--
+		v.connections--
 	}
 
 	return volume.Response{}
@@ -242,7 +243,10 @@ func main() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	d := newSshfsDriver(filepath.Join("/mnt", sshfsID))
+	d, err := newSshfsDriver("/mnt")
+	if err != nil {
+		log.Fatal(err)
+	}
 	h := volume.NewHandler(d)
 	logrus.Infof("listening on %s", socketAddress)
 	logrus.Error(h.ServeUnix("", socketAddress))

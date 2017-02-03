@@ -20,12 +20,12 @@
 	"mounts": [
 		{
 			"source": "/tmp/sshfs",
-			"destination": "/mnt/_sshfs/state",
+			"destination": "/mnt/state",
 			"options": ["rbind"],
 			"type": "bind"
 		}
 	],
-	"propagatedmount": "/mnt",
+	"propagatedmount": "/mnt/volumes",
 	"env": [
 	    {
 		"name":"DEBUG",
