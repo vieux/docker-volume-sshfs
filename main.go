@@ -78,12 +78,23 @@ func (d *sshfsDriver) Create(r volume.Request) volume.Response {
 	d.Lock()
 	defer d.Unlock()
 	v := &sshfsVolume{}
-	if r.Options == nil || r.Options["sshcmd"] == "" {
-		return responseError("ssh option required")
+
+	for key, val := range r.Options {
+		switch key {
+		case "sshcmd":
+			v.Sshcmd = val
+		case "password":
+			v.Password = val
+		case "port":
+			v.Port = val
+		default:
+			return responseError(fmt.Sprintf("unknown option %q", val))
+		}
 	}
-	v.Sshcmd = r.Options["sshcmd"]
-	v.Password = r.Options["password"]
-	v.Port = r.Options["port"]
+
+	if v.Sshcmd == "" {
+		return responseError("'sshcmd' option required")
+	}
 	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x", md5.Sum([]byte(v.Sshcmd))))
 
 	d.volumes[r.Name] = v
