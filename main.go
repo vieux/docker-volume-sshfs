@@ -21,6 +21,7 @@ const socketAddress = "/run/docker/plugins/sshfs.sock"
 type sshfsVolume struct {
 	Password string
 	Sshcmd   string
+	Port     string
 
 	Mountpoint  string
 	connections int
@@ -82,6 +83,7 @@ func (d *sshfsDriver) Create(r volume.Request) volume.Response {
 	}
 	v.Sshcmd = r.Options["sshcmd"]
 	v.Password = r.Options["password"]
+	v.Port = r.Options["port"]
 	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x", md5.Sum([]byte(v.Sshcmd))))
 
 	d.volumes[r.Name] = v
@@ -219,6 +221,9 @@ func (d *sshfsDriver) Capabilities(r volume.Request) volume.Response {
 
 func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 	cmd := fmt.Sprintf("sshfs -oStrictHostKeyChecking=no %s %s", v.Sshcmd, v.Mountpoint)
+	if v.Port != "" {
+		cmd = fmt.Sprintf("%s -p %s", cmd, v.Port)
+	}
 	if v.Password != "" {
 		cmd = fmt.Sprintf("echo %s | %s -o workaround=rename -o password_stdin", v.Password, cmd)
 	}

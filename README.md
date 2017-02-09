@@ -15,7 +15,7 @@ $ docker plugin install vieux/sshfs # or docker plugin install vieux/sshfs DEBUG
 2 - Create a volume
 
 ```
-$ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o password=<password> sshvolume
+$ docker volume create -d vieux/sshfs -o sshcmd=<user@host:path> -o password=<password> [-o port=<port>] sshvolume
 sshvolume
 $ docker volume ls
 DRIVER              VOLUME NAME
