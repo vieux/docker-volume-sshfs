@@ -4,13 +4,13 @@
   notifications:
     email: false
   go:
-    - 1.6
-    - 1.7
-    - tip
+    - 1.6.x
+    - 1.7.x
+    - master
   install:
     - go get github.com/golang/lint/golint
   script:
-    - go vet ./...
+    - test -z "$(go vet ./... | grep -v vendor/ | tee /dev/stderr)"
     - test -z "$(golint ./... | grep -v vendor/ | tee /dev/stderr)"
     - test -z "$(gofmt -s -l . | grep -v vendor/ | tee /dev/stderr)"
     - go list ./... | go test -v
