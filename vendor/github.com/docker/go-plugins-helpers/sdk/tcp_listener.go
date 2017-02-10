@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"crypto/tls"
 	"io/ioutil"
 	"net"
 	"os"
@@ -13,8 +14,8 @@ const (
 	pluginSpecDir = "/etc/docker/plugins"
 )
 
-func newTCPListener(address string, pluginName string) (net.Listener, string, error) {
-	listener, err := sockets.NewTCPSocket(address, nil)
+func newTCPListener(address string, pluginName string, tlsConfig *tls.Config) (net.Listener, string, error) {
+	listener, err := sockets.NewTCPSocket(address, tlsConfig)
 	if err != nil {
 		return nil, "", err
 	}

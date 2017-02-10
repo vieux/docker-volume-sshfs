@@ -3,59 +3,77 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "vQbjmSlhdSQcm5XiQElWSWVjBI8=",
+			"checksumSHA1": "L9njXCkN30+qHaLayiiA2Q9jDlY=",
+			"path": "github.com/Microsoft/go-winio",
+			"revision": "fff283ad5116362ca252298cfc9b95828956d85d",
+			"revisionTime": "2017-02-01T00:43:30Z"
+		},
+		{
+			"checksumSHA1": "cT6+XPBZiXsFbb7cXT6AYNrZyuM=",
 			"path": "github.com/Sirupsen/logrus",
-			"revision": "446d1c146faa8ed3f4218f056fcd165f6bcfda81",
-			"revisionTime": "2015-12-04T14:14:43Z"
+			"revision": "3f603f494d61c73457fb234161d8982b9f0f0b71",
+			"revisionTime": "2017-02-07T18:34:08Z"
 		},
 		{
-			"checksumSHA1": "ftBtTa6+I7MwOk6zTGvIawQs4qA=",
+			"checksumSHA1": "RBwpnMpfQt7Jo7YWrRph0Vwe+f0=",
 			"path": "github.com/coreos/go-systemd/activation",
-			"revision": "fa8411dcbcbad22b8542b0433914ef68b123f989",
-			"revisionTime": "2016-07-28T00:04:19Z"
+			"revision": "e97b35f834b17eaa82afe3d44715c34736bfa12b",
+			"revisionTime": "2017-02-01T10:47:36Z"
 		},
 		{
-			"checksumSHA1": "uslisHQFxjW+mwWQB8UpJbqNpo8=",
+			"checksumSHA1": "e8qgBHxXbij3RVspqrkeBzMZ564=",
 			"path": "github.com/coreos/go-systemd/util",
-			"revision": "fa8411dcbcbad22b8542b0433914ef68b123f989",
-			"revisionTime": "2016-07-28T00:04:19Z"
+			"revision": "e97b35f834b17eaa82afe3d44715c34736bfa12b",
+			"revisionTime": "2017-02-01T10:47:36Z"
 		},
 		{
-			"checksumSHA1": "PqfZ1nPth0u742gRe4ochQ16umQ=",
+			"checksumSHA1": "O8c/VKtW34XPJNNlyeb/im8vWSI=",
 			"path": "github.com/coreos/pkg/dlopen",
-			"revision": "3ac0863d7acf3bc44daf49afef8919af12f704ef",
-			"revisionTime": "2016-07-27T23:37:14Z"
+			"revision": "1c941d73110817a80b9fa6e14d5d2b00d977ce2a",
+			"revisionTime": "2017-02-06T20:20:45Z"
 		},
 		{
-			"checksumSHA1": "rP+yDhI9rrjJcXUREGLUFkvqD0g=",
+			"checksumSHA1": "jUfDG3VQsA2UZHvvIXncgiddpYA=",
 			"path": "github.com/docker/go-connections/sockets",
-			"revision": "34b5052da6b11e27f5f2e357b38b571ddddd3928",
-			"revisionTime": "2016-02-12T23:19:11Z"
+			"revision": "7da10c8c50cad14494ec818dcdfb6506265c0086",
+			"revisionTime": "2017-02-03T23:56:24Z"
 		},
 		{
-			"checksumSHA1": "Ourfr7SBm3lJDkOKLNbR472sjVA=",
+			"checksumSHA1": "9/gpnQVuH/eszYpzCGeG1AtOdMM=",
 			"path": "github.com/docker/go-plugins-helpers/sdk",
-			"revision": "5030c3ee1a1f7db91a2c2768a5aaf35ad715ee6e",
-			"revisionTime": "2016-08-01T21:12:26Z"
+			"revision": "8af45ff6ad5b7608853de51133c33e6638b02134",
+			"revisionTime": "2017-01-30T18:14:55Z"
 		},
 		{
-			"checksumSHA1": "50cXlRayb+MlKuJj4n7kEO4dScA=",
+			"checksumSHA1": "bELvyBvmY5t2P/dCuCLxwTb1I+Q=",
 			"path": "github.com/docker/go-plugins-helpers/volume",
-			"revision": "5030c3ee1a1f7db91a2c2768a5aaf35ad715ee6e",
-			"revisionTime": "2016-08-01T21:12:26Z"
+			"revision": "8af45ff6ad5b7608853de51133c33e6638b02134",
+			"revisionTime": "2017-01-30T18:14:55Z"
 		},
 		{
-			"checksumSHA1": "mZiiJeCIbpOaAoEBvzj4NsR3kp0=",
+			"checksumSHA1": "KVZRinwxB3LsuMUkOZw5/U2WgE8=",
 			"path": "github.com/opencontainers/runc/libcontainer/user",
-			"revision": "2c3115481ee1782ad687a9e0b4834f89533c2acf",
-			"revisionTime": "2016-02-23T08:00:19Z"
+			"revision": "e944298919e1ad2b63ffdae961fd7cb5c52da2e4",
+			"revisionTime": "2017-02-08T18:04:39Z"
 		},
 		{
-			"checksumSHA1": "KfGbNTddygOy3Ai1rBG4it6A3JM=",
+			"checksumSHA1": "fjMK2G5arnjllpoeBYeyf9Y2Iok=",
 			"path": "golang.org/x/net/proxy",
-			"revision": "4fd4a9fed55e5bdee4a89d6406c2eabe38b60300",
-			"revisionTime": "2016-01-11T01:52:05Z"
+			"revision": "a689eb3bc4b53af70390acc3cf68c9f549b6b8d6",
+			"revisionTime": "2017-01-21T08:53:43Z"
+		},
+		{
+			"checksumSHA1": "uTQtOqR0ePMMcvuvAIksiIZxhqU=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "7a6e5648d140666db5d920909e082ca00a87ba2c",
+			"revisionTime": "2017-02-01T04:15:14Z"
+		},
+		{
+			"checksumSHA1": "kQB2wRB3twjUp615F6zEwGHjNe0=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "7a6e5648d140666db5d920909e082ca00a87ba2c",
+			"revisionTime": "2017-02-01T04:15:14Z"
 		}
 	],
-	"rootPath": "/github.com/vieux/docker-volume-sshfs"
+	"rootPath": "github.com/vieux/docker-volume-sshfs"
 }

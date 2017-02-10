@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
@@ -38,46 +39,31 @@ func (h Handler) Serve(l net.Listener) error {
 
 // ServeTCP makes the handler to listen for request in a given TCP address.
 // It also writes the spec file on the right directory for docker to read.
-func (h Handler) ServeTCP(pluginName, addr string) error {
-	return h.listenAndServe("tcp", addr, pluginName)
+func (h Handler) ServeTCP(pluginName, addr string, tlsConfig *tls.Config) error {
+	l, spec, err := newTCPListener(addr, pluginName, tlsConfig)
+	if err != nil {
+		return err
+	}
+	if spec != "" {
+		defer os.Remove(spec)
+	}
+	return h.Serve(l)
 }
 
 // ServeUnix makes the handler to listen for requests in a unix socket.
 // It also creates the socket file on the right directory for docker to read.
-func (h Handler) ServeUnix(systemGroup, addr string) error {
-	return h.listenAndServe("unix", addr, systemGroup)
+func (h Handler) ServeUnix(addr string, gid int) error {
+	l, spec, err := newUnixListener(addr, gid)
+	if err != nil {
+		return err
+	}
+	if spec != "" {
+		defer os.Remove(spec)
+	}
+	return h.Serve(l)
 }
 
 // HandleFunc registers a function to handle a request path with.
 func (h Handler) HandleFunc(path string, fn func(w http.ResponseWriter, r *http.Request)) {
 	h.mux.HandleFunc(path, fn)
-}
-
-func (h Handler) listenAndServe(proto, addr, group string) error {
-	var (
-		err  error
-		spec string
-		l    net.Listener
-	)
-
-	server := http.Server{
-		Addr:    addr,
-		Handler: h.mux,
-	}
-
-	switch proto {
-	case "tcp":
-		l, spec, err = newTCPListener(addr, group)
-	case "unix":
-		l, spec, err = newUnixListener(addr, group)
-	}
-
-	if spec != "" {
-		defer os.Remove(spec)
-	}
-	if err != nil {
-		return err
-	}
-
-	return server.Serve(l)
 }
