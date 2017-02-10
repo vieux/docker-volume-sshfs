@@ -1,5 +1,5 @@
 PLUGIN_NAME=vieux/sshfs
-PLUGIN_TAG=latest
+PLUGIN_TAG=1.0
 
 all: clean docker rootfs create
 
