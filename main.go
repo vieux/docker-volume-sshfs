@@ -115,15 +115,15 @@ func (d *sshfsDriver) Remove(r volume.Request) volume.Response {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
 
-	if v.connections == 0 {
-		if err := os.RemoveAll(v.Mountpoint); err != nil {
-			return responseError(err.Error())
-		}
-		delete(d.volumes, r.Name)
-		d.saveState()
-		return volume.Response{}
+	if v.connections != 0 {
+		return responseError(fmt.Sprintf("volume %s is currently used by a container", r.Name))
 	}
-	return responseError(fmt.Sprintf("volume %s is currently used by a container", r.Name))
+	if err := os.RemoveAll(v.Mountpoint); err != nil {
+		return responseError(err.Error())
+	}
+	delete(d.volumes, r.Name)
+	d.saveState()
+	return volume.Response{}
 }
 
 func (d *sshfsDriver) Path(r volume.Request) volume.Response {
@@ -151,27 +151,26 @@ func (d *sshfsDriver) Mount(r volume.MountRequest) volume.Response {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
 
-	if v.connections > 0 {
-		v.connections++
-		return volume.Response{Mountpoint: v.Mountpoint}
-	}
-
-	fi, err := os.Lstat(v.Mountpoint)
-	if os.IsNotExist(err) {
-		if err := os.MkdirAll(v.Mountpoint, 0755); err != nil {
+	if v.connections == 0 {
+		fi, err := os.Lstat(v.Mountpoint)
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(v.Mountpoint, 0755); err != nil {
+				return responseError(err.Error())
+			}
+		} else if err != nil {
 			return responseError(err.Error())
 		}
-	} else if err != nil {
-		return responseError(err.Error())
+
+		if fi != nil && !fi.IsDir() {
+			return responseError(fmt.Sprintf("%v already exist and it's not a directory", v.Mountpoint))
+		}
+
+		if err := d.mountVolume(v); err != nil {
+			return responseError(err.Error())
+		}
 	}
 
-	if fi != nil && !fi.IsDir() {
-		return responseError(fmt.Sprintf("%v already exist and it's not a directory", v.Mountpoint))
-	}
-
-	if err := d.mountVolume(v); err != nil {
-		return responseError(err.Error())
-	}
+	v.connections++
 
 	return volume.Response{Mountpoint: v.Mountpoint}
 }
@@ -185,13 +184,14 @@ func (d *sshfsDriver) Unmount(r volume.UnmountRequest) volume.Response {
 	if !ok {
 		return responseError(fmt.Sprintf("volume %s not found", r.Name))
 	}
-	if v.connections <= 1 {
+
+	v.connections--
+
+	if v.connections <= 0 {
 		if err := d.unmountVolume(v.Mountpoint); err != nil {
 			return responseError(err.Error())
 		}
 		v.connections = 0
-	} else {
-		v.connections--
 	}
 
 	return volume.Response{}
