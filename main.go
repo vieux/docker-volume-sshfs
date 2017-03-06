@@ -22,6 +22,7 @@ type sshfsVolume struct {
 	Password string
 	Sshcmd   string
 	Port     string
+	AllowOther  bool
 
 	Mountpoint  string
 	connections int
@@ -87,8 +88,10 @@ func (d *sshfsDriver) Create(r volume.Request) volume.Response {
 			v.Password = val
 		case "port":
 			v.Port = val
+		case "allow_other":
+			v.AllowOther = true
 		default:
-			return responseError(fmt.Sprintf("unknown option %q", val))
+			return responseError(fmt.Sprintf("unknown option %q=%q", key, val))
 		}
 	}
 
@@ -237,6 +240,9 @@ func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 	}
 	if v.Password != "" {
 		cmd = fmt.Sprintf("echo %s | %s -o workaround=rename -o password_stdin", v.Password, cmd)
+	}
+	if v.AllowOther {
+		cmd = fmt.Sprintf("%s -o allow_other", cmd)
 	}
 	logrus.Debug(cmd)
 	return exec.Command("sh", "-c", cmd).Run()
