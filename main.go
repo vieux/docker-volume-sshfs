@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/Sirupsen/logrus"
@@ -231,15 +232,16 @@ func (d *sshfsDriver) Capabilities(r volume.Request) volume.Response {
 }
 
 func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
-	cmd := fmt.Sprintf("sshfs -oStrictHostKeyChecking=no %s %s", v.Sshcmd, v.Mountpoint)
+	cmd := exec.Command("sshfs", "-oStrictHostKeyChecking=no", v.Sshcmd, v.Mountpoint)
 	if v.Port != "" {
-		cmd = fmt.Sprintf("%s -p %s", cmd, v.Port)
+		cmd.Args = append(cmd.Args, "-p", v.Port)
 	}
 	if v.Password != "" {
-		cmd = fmt.Sprintf("echo %s | %s -o workaround=rename -o password_stdin", v.Password, cmd)
+		cmd.Args = append(cmd.Args, "-p", v.Port, "-o", "workaround=rename", "-o", "password_stdin")
+		cmd.Stdin = strings.NewReader(v.Password)
 	}
-	logrus.Debug(cmd)
-	return exec.Command("sh", "-c", cmd).Run()
+	logrus.Debug(cmd.Args)
+	return cmd.Run()
 }
 
 func (d *sshfsDriver) unmountVolume(target string) error {
