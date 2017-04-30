@@ -246,7 +246,7 @@ func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 	if v.AllowOther {
 		cmd = fmt.Sprintf("%s -o allow_other", cmd)
 	}
-	logrus.Debug(cmd)
+	logrus.Debug(cmd.Args)
 	return cmd.Run()
 }
 
