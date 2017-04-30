@@ -19,10 +19,10 @@ import (
 const socketAddress = "/run/docker/plugins/sshfs.sock"
 
 type sshfsVolume struct {
-	Password string
-	Sshcmd   string
-	Port     string
-	AllowOther  bool
+	Password   string
+	Sshcmd     string
+	Port       string
+	AllowOther bool
 
 	Mountpoint  string
 	connections int
