@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -20,9 +19,9 @@ func DecodeRequest(w http.ResponseWriter, r *http.Request, req interface{}) (err
 }
 
 // EncodeResponse encodes the given structure into an http response.
-func EncodeResponse(w http.ResponseWriter, res interface{}, err string) {
+func EncodeResponse(w http.ResponseWriter, res interface{}, err bool) {
 	w.Header().Set("Content-Type", DefaultContentTypeV1_1)
-	if err != "" {
+	if err {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	json.NewEncoder(w).Encode(res)
@@ -31,11 +30,8 @@ func EncodeResponse(w http.ResponseWriter, res interface{}, err string) {
 // StreamResponse streams a response object to the client
 func StreamResponse(w http.ResponseWriter, data io.ReadCloser) {
 	w.Header().Set("Content-Type", DefaultContentTypeV1_1)
-	defer data.Close()
-	byteStream, err := ioutil.ReadAll(data)
-	if err != nil {
+	if _, err := copyBuf(w, data); err != nil {
 		fmt.Printf("ERROR in stream: %v\n", err)
-		return
 	}
-	w.Write(byteStream)
+	data.Close()
 }
