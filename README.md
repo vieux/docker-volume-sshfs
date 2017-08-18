@@ -34,10 +34,6 @@ vieux/sshfs         sshvolume
 $ docker run -it -v sshvolume:<path> busybox ls <path>
 ```
 
-## THANKS
-
-https://github.com/docker/go-plugins-helpers
-
 ## LICENSE
 
 MIT
