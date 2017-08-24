@@ -1,16 +1,23 @@
 ---
-  language: go
-  sudo: false
   notifications:
     email: false
-  go:
-    - 1.6.x
-    - 1.7.x
-    - master
-  install:
-    - go get github.com/golang/lint/golint
+
+  matrix:
+    include:
+      - language: go
+        go: 1.6.x
+        env: TESTFILE=unit.sh
+      - language: go
+        go: 1.7.x
+        env: TESTFILE=unit.sh
+      - language: go
+        go: master
+        env: TESTFILE=unit.sh
+      - language: generic
+        sudo: required
+        services:
+          - docker
+        env: TESTFILE=integration.sh
+
   script:
-    - test -z "$(go vet ./... | grep -v vendor/ | tee /dev/stderr)"
-    - test -z "$(golint ./... | grep -v vendor/ | tee /dev/stderr)"
-    - test -z "$(gofmt -s -l . | grep -v vendor/ | tee /dev/stderr)"
-    - go list ./... | go test -v
+    - ./.travis/$TESTFILE
