@@ -1,6 +1,7 @@
 package volume
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/docker/go-plugins-helpers/sdk"
@@ -21,10 +22,15 @@ const (
 	capabilitiesPath = "/VolumeDriver.Capabilities"
 )
 
-// Request is the structure that docker's requests are deserialized to.
-type Request struct {
+// CreateRequest is the structure that docker's requests are deserialized to.
+type CreateRequest struct {
 	Name    string
 	Options map[string]string `json:"Opts,omitempty"`
+}
+
+// RemoveRequest structure for a volume remove request
+type RemoveRequest struct {
+	Name string
 }
 
 // MountRequest structure for a volume mount request
@@ -33,18 +39,44 @@ type MountRequest struct {
 	ID   string
 }
 
+// MountResponse structure for a volume mount response
+type MountResponse struct {
+	Mountpoint string
+}
+
 // UnmountRequest structure for a volume unmount request
 type UnmountRequest struct {
 	Name string
 	ID   string
 }
 
-// Response is the strucutre that the plugin's responses are serialized to.
-type Response struct {
-	Mountpoint   string
-	Err          string
-	Volumes      []*Volume
-	Volume       *Volume
+// PathRequest structure for a volume path request
+type PathRequest struct {
+	Name string
+}
+
+// PathResponse structure for a volume path response
+type PathResponse struct {
+	Mountpoint string
+}
+
+// GetRequest structure for a volume get request
+type GetRequest struct {
+	Name string
+}
+
+// GetResponse structure for a volume get response
+type GetResponse struct {
+	Volume *Volume
+}
+
+// ListResponse structure for a volume list response
+type ListResponse struct {
+	Volumes []*Volume
+}
+
+// CapabilitiesResponse structure for a volume capability response
+type CapabilitiesResponse struct {
 	Capabilities Capability
 }
 
@@ -60,16 +92,26 @@ type Capability struct {
 	Scope string
 }
 
+// ErrorResponse is a formatted error message that docker can understand
+type ErrorResponse struct {
+	Err string
+}
+
+// NewErrorResponse creates an ErrorResponse with the provided message
+func NewErrorResponse(msg string) *ErrorResponse {
+	return &ErrorResponse{Err: msg}
+}
+
 // Driver represent the interface a driver must fulfill.
 type Driver interface {
-	Create(Request) Response
-	List(Request) Response
-	Get(Request) Response
-	Remove(Request) Response
-	Path(Request) Response
-	Mount(MountRequest) Response
-	Unmount(UnmountRequest) Response
-	Capabilities(Request) Response
+	Create(*CreateRequest) error
+	List() (*ListResponse, error)
+	Get(*GetRequest) (*GetResponse, error)
+	Remove(*RemoveRequest) error
+	Path(*PathRequest) (*PathResponse, error)
+	Mount(*MountRequest) (*MountResponse, error)
+	Unmount(*UnmountRequest) error
+	Capabilities() *CapabilitiesResponse
 }
 
 // Handler forwards requests and responses between the docker daemon and the plugin.
@@ -77,10 +119,6 @@ type Handler struct {
 	driver Driver
 	sdk.Handler
 }
-
-type actionHandler func(Request) Response
-type mountActionHandler func(MountRequest) Response
-type unmountActionHandler func(UnmountRequest) Response
 
 // NewHandler initializes the request handler with a driver implementation.
 func NewHandler(driver Driver) *Handler {
@@ -90,71 +128,102 @@ func NewHandler(driver Driver) *Handler {
 }
 
 func (h *Handler) initMux() {
-	h.handle(createPath, func(req Request) Response {
-		return h.driver.Create(req)
-	})
-
-	h.handle(getPath, func(req Request) Response {
-		return h.driver.Get(req)
-	})
-
-	h.handle(listPath, func(req Request) Response {
-		return h.driver.List(req)
-	})
-
-	h.handle(removePath, func(req Request) Response {
-		return h.driver.Remove(req)
-	})
-
-	h.handle(hostVirtualPath, func(req Request) Response {
-		return h.driver.Path(req)
-	})
-
-	h.handleMount(mountPath, func(req MountRequest) Response {
-		return h.driver.Mount(req)
-	})
-
-	h.handleUnmount(unmountPath, func(req UnmountRequest) Response {
-		return h.driver.Unmount(req)
-	})
-	h.handle(capabilitiesPath, func(req Request) Response {
-		return h.driver.Capabilities(req)
-	})
-}
-
-func (h *Handler) handle(name string, actionCall actionHandler) {
-	h.HandleFunc(name, func(w http.ResponseWriter, r *http.Request) {
-		var req Request
-		if err := sdk.DecodeRequest(w, r, &req); err != nil {
+	h.HandleFunc(createPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers createPath")
+		req := &CreateRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
 			return
 		}
-
-		res := actionCall(req)
-
-		sdk.EncodeResponse(w, res, res.Err)
-	})
-}
-
-func (h *Handler) handleMount(name string, actionCall mountActionHandler) {
-	h.HandleFunc(name, func(w http.ResponseWriter, r *http.Request) {
-		var req MountRequest
-		if err := sdk.DecodeRequest(w, r, &req); err != nil {
+		err = h.driver.Create(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
 			return
 		}
-
-		res := actionCall(req)
-		sdk.EncodeResponse(w, res, res.Err)
+		sdk.EncodeResponse(w, struct{}{}, false)
 	})
-}
-
-func (h *Handler) handleUnmount(name string, actionCall unmountActionHandler) {
-	h.HandleFunc(name, func(w http.ResponseWriter, r *http.Request) {
-		var req UnmountRequest
-		if err := sdk.DecodeRequest(w, r, &req); err != nil {
+	h.HandleFunc(removePath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers removePath")
+		req := &RemoveRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
 			return
 		}
+		err = h.driver.Remove(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, struct{}{}, false)
+	})
+	h.HandleFunc(mountPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers mountPath")
+		req := &MountRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
+			return
+		}
+		res, err := h.driver.Mount(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, res, false)
+	})
+	h.HandleFunc(hostVirtualPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers hostVirtualPath")
+		req := &PathRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
+			return
+		}
+		res, err := h.driver.Path(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, res, false)
+	})
+	h.HandleFunc(getPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers getPath")
+		req := &GetRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
+			return
+		}
+		res, err := h.driver.Get(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, res, false)
+	})
+	h.HandleFunc(unmountPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers unmountPath")
+		req := &UnmountRequest{}
+		err := sdk.DecodeRequest(w, r, req)
+		if err != nil {
+			return
+		}
+		err = h.driver.Unmount(req)
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, struct{}{}, false)
+	})
+	h.HandleFunc(listPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers listPath")
+		res, err := h.driver.List()
+		if err != nil {
+			sdk.EncodeResponse(w, NewErrorResponse(err.Error()), true)
+			return
+		}
+		sdk.EncodeResponse(w, res, false)
+	})
 
-		res := actionCall(req)
-		sdk.EncodeResponse(w, res, res.Err)
+	h.HandleFunc(capabilitiesPath, func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Entering go-plugins-helpers capabilitiesPath")
+		sdk.EncodeResponse(w, h.driver.Capabilities(), false)
 	})
 }

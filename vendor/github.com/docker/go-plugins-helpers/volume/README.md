@@ -23,10 +23,13 @@ This library is designed to be integrated in your program.
 ```go
   d := MyVolumeDriver{}
   h := volume.NewHandler(d)
-  h.ServeUnix("root", "test_volume")
+  u, _ := user.Lookup("root")
+  gid, _ := strconv.Atoi(u.Gid)
+  h.ServeUnix("test_volume", gid)
 ```
 
 ## Full example plugins
 
 - https://github.com/calavera/docker-volume-glusterfs
 - https://github.com/calavera/docker-volume-keywhiz
+- https://github.com/quobyte/docker-volume
