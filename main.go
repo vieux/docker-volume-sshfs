@@ -20,10 +20,11 @@ import (
 const socketAddress = "/run/docker/plugins/sshfs.sock"
 
 type sshfsVolume struct {
-	Password   string
-	Sshcmd     string
-	Port       string
-	AllowOther bool
+	Password string
+	Sshcmd   string
+	Port     string
+
+	Options []string
 
 	Mountpoint  string
 	connections int
@@ -89,10 +90,12 @@ func (d *sshfsDriver) Create(r *volume.CreateRequest) error {
 			v.Password = val
 		case "port":
 			v.Port = val
-		case "allow_other":
-			v.AllowOther = true
 		default:
-			return logError("unknown option %q=%q", key, val)
+			if val != "" {
+				v.Options = append(v.Options, key+"="+val)
+			} else {
+				v.Options = append(v.Options, key)
+			}
 		}
 	}
 
@@ -243,9 +246,11 @@ func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 		cmd.Args = append(cmd.Args, "-o", "workaround=rename", "-o", "password_stdin")
 		cmd.Stdin = strings.NewReader(v.Password)
 	}
-	if v.AllowOther {
-		cmd.Args = append(cmd.Args, "-o", "allow_other")
+
+	for _, option := range v.Options {
+		cmd.Args = append(cmd.Args, "-o", option)
 	}
+
 	logrus.Debug(cmd.Args)
 	return cmd.Run()
 }
