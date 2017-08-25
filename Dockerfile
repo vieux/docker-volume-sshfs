@@ -10,6 +10,6 @@ CMD ["/go/bin/docker-volume-sshfs"]
 
 FROM alpine
 RUN apk update && apk add sshfs
-RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes
+RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes .ssh
 COPY --from=builder /go/bin/docker-volume-sshfs .
 CMD ["docker-volume-sshfs"]
