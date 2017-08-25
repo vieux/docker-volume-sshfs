@@ -5,10 +5,10 @@
   matrix:
     include:
       - language: go
-        go: 1.7.x
+        go: 1.8.x
         env: TESTFILE=unit.sh
       - language: go
-        go: 1.8.x
+        go: 1.9.x
         env: TESTFILE=unit.sh
       - language: go
         go: master
