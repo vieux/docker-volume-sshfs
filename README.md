@@ -10,7 +10,13 @@ This plugin allows you to mount remote folder using sshfs in your container easi
 1 - Install the plugin
 
 ```
-$ docker plugin install vieux/sshfs # or docker plugin install vieux/sshfs DEBUG=1
+$ docker plugin install vieux/sshfs
+
+# or to enable debug 
+docker plugin install vieux/sshfs DEBUG=1
+
+# or to change where plugin state is stored
+docker plugin install vieux/sshfs state.source=<any_folder>
 ```
 
 2 - Create a volume
