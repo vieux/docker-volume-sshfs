@@ -43,7 +43,7 @@
       "type": "bind"
     },
     {
-      "destination": "/.ssh",
+      "destination": "/root/.ssh",
       "options": [
         "rbind"
       ],

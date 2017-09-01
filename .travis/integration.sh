@@ -62,7 +62,7 @@ sudo docker volume rm sshvolume
 sudo docker plugin disable vieux/sshfs:$TAG
 sudo docker plugin set vieux/sshfs:$TAG sshkey.source=`pwd`/.travis/ssh/
 sudo docker plugin enable vieux/sshfs:$TAG
-sudo docker volume create -d vieux/sshfs:$TAG -o sshcmd=root@localhost:/ -o port=2222 -o IdentityFile=/.ssh/key sshvolume
+sudo docker volume create -d vieux/sshfs:$TAG -o sshcmd=root@localhost:/ -o port=2222 sshvolume
 sudo docker run --rm -v sshvolume:/write busybox sh -c "echo hello > /write/world"
 sudo docker run --rm -v sshvolume:/read busybox grep -Fxq hello /read/world
 #sudo cat /var/lib/docker/plugins/sshfs-state.json
