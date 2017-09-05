@@ -41,6 +41,18 @@
         "source"
       ],
       "type": "bind"
+    },
+    {
+      "destination": "/root/.ssh",
+      "options": [
+        "rbind"
+      ],
+      "name": "sshkey",
+      "source": "",
+      "settable": [
+        "source"
+      ],
+      "type": "bind"
     }
   ],
   "network": {
