@@ -25,7 +25,8 @@ create:
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
 
 enable:		
-	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"		
+	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
+	@docker plugin set ${PLUGIN_NAME}:${PLUGIN_TAG} DEBUG=1
 	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
 
 push:  clean rootfs create enable
