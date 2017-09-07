@@ -14,7 +14,7 @@ PLUGIN_TAG=$TAG make enable
 # list plugins
 docker plugin ls
 # start sshd
-docker run -d -p 2222:22 sshd
+docker run -d --name sshd -p 2222:22 sshd
 
 echo "# test1: simple"
 docker volume create -d vieux/sshfs:$TAG -o sshcmd=root@localhost:/ -o port=2222 -o password=root sshvolume
@@ -37,7 +37,14 @@ docker run --rm -v sshvolume:/read busybox grep -Fxq hello /read/world
 #cat /var/lib/docker/plugins/sshfs-state.json
 docker volume rm sshvolume
 
-echo "# test4: source"
+echo "# test4: restart"
+docker volume create -d vieux/sshfs:$TAG -o sshcmd=root@localhost:/ -o port=2222 -o password=root sshvolume
+docker run --rm -v sshvolume:/write busybox sh -c "echo hello > /write/world"
+docker restart sshd
+docker run --rm -v sshvolume:/read busybox grep -Fxq hello /read/world
+docker volume rm sshvolume
+
+echo "# test5: source"
 docker plugin disable vieux/sshfs:$TAG
 docker plugin set vieux/sshfs:$TAG state.source=/tmp
 docker plugin enable vieux/sshfs:$TAG
@@ -47,7 +54,7 @@ docker run --rm -v sshvolume:/read busybox grep -Fxq hello /read/world
 #cat /tmp/sshfs-state.json
 docker volume rm sshvolume
 
-echo "# test5: ssh key"
+echo "# test6: ssh key"
 docker plugin disable vieux/sshfs:$TAG
 docker plugin set vieux/sshfs:$TAG sshkey.source=`pwd`/.travis/ssh/
 docker plugin enable vieux/sshfs:$TAG
@@ -56,3 +63,5 @@ docker run --rm -v sshvolume:/write busybox sh -c "echo hello > /write/world"
 docker run --rm -v sshvolume:/read busybox grep -Fxq hello /read/world
 #cat /var/lib/docker/plugins/sshfs-state.json
 docker volume rm sshvolume
+
+
