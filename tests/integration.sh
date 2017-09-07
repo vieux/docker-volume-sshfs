@@ -15,7 +15,7 @@ TAG=test
 sudo docker pull rastasheep/ubuntu-sshd
 sudo docker pull busybox
 
-docker build -t sshd .travis/ssh
+docker build -t sshd tests/testdata
 #script
 
 # make the plugin
@@ -60,7 +60,7 @@ sudo docker volume rm sshvolume
 
 # test5: ssh key
 sudo docker plugin disable vieux/sshfs:$TAG
-sudo docker plugin set vieux/sshfs:$TAG sshkey.source=`pwd`/.travis/ssh/
+sudo docker plugin set vieux/sshfs:$TAG sshkey.source=`pwd`/test/testdata/
 sudo docker plugin enable vieux/sshfs:$TAG
 sudo docker volume create -d vieux/sshfs:$TAG -o sshcmd=root@localhost:/ -o port=2222 sshvolume
 sudo docker run --rm -v sshvolume:/write busybox sh -c "echo hello > /write/world"
