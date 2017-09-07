@@ -22,6 +22,10 @@
           - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
           - sudo apt-get update
           - sudo apt-get -y install docker-ce
+        install:
+          - docker pull rastasheep/ubuntu-sshd
+          - docker pull busybox
+          - docker build -t sshd .travis/ssh
         env: TESTFILE=integration.sh
 
   script:
