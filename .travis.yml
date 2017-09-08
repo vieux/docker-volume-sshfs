@@ -6,13 +6,13 @@
     include:
       - language: go
         go: 1.8.x
-        env: TESTFILE=unit.sh
+        env: RULE=test-unit
       - language: go
         go: 1.9.x
-        env: TESTFILE=unit.sh
+        env: RULE=test-unit
       - language: go
         go: master
-        env: TESTFILE=unit.sh
+        env: RULE=test-unit
       - language: generic
         sudo: required
         services:
@@ -22,7 +22,7 @@
           - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
           - sudo apt-get update
           - sudo apt-get -y install docker-ce
-        env: TESTFILE=integration.sh
+        env: RULE=test-integration
 
   script:
-    - ./.travis/$TESTFILE
+    - make $RULE

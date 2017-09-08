@@ -31,3 +31,13 @@ enable:
 push:  clean rootfs create enable
 	@echo "### push plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin push ${PLUGIN_NAME}:${PLUGIN_TAG}
+
+test: test-unit test-integration
+
+test-unit:
+	@echo "### unit tests"
+	./tests/unit.sh
+
+test-integration:
+	@echo "### integration tests"
+	./tests/integration.sh
