@@ -263,7 +263,7 @@ func (d *sshfsDriver) unmountVolume(target string) error {
 
 func logError(format string, args ...interface{}) error {
 	logrus.Errorf(format, args...)
-	return fmt.Errorf(format, args)
+	return fmt.Errorf(format, args...)
 }
 
 func main() {
