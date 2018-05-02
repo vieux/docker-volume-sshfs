@@ -1,4 +1,4 @@
-FROM golang:1.9-alpine as builder
+FROM golang:1.10-alpine as builder
 COPY . /go/src/github.com/vieux/docker-volume-sshfs
 WORKDIR /go/src/github.com/vieux/docker-volume-sshfs
 RUN set -ex \
