@@ -1,5 +1,5 @@
 PLUGIN_NAME = vieux/sshfs
-PLUGIN_TAG ?= 1.4
+PLUGIN_TAG ?= next
 
 all: clean rootfs create
 
