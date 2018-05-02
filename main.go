@@ -252,9 +252,9 @@ func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 	}
 
 	logrus.Debug(cmd.Args)
-	output,err := cmd.CombinedOutput()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return logError("sshfs command execute failed: %s ( %s )", err, string(output))
+		return logError("sshfs command execute failed: %v (%s)", err, output)
 	}
 	return nil
 }
