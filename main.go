@@ -102,7 +102,7 @@ func (d *sshfsDriver) Create(r *volume.CreateRequest) error {
 	if v.Sshcmd == "" {
 		return logError("'sshcmd' option required")
 	}
-	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x", md5.Sum(append([]byte(v.Sshcmd),[]byte(v.Port)...)))
+	v.Mountpoint = filepath.Join(d.root, fmt.Sprintf("%x", md5.Sum(append([]byte(v.Sshcmd),[]byte(v.Port)...))))
 
 	d.volumes[r.Name] = v
 
