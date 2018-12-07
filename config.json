@@ -43,6 +43,15 @@
       "type": "bind"
     },
     {
+      "destination": "/tmp",
+      "options": [
+        "rbind"
+      ],
+      "name": "tmp",
+      "source": "/tmp/",
+      "type": "bind"
+    },
+    {
       "destination": "/root/.ssh",
       "options": [
         "rbind"
