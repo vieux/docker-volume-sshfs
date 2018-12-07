@@ -20,9 +20,10 @@ import (
 const socketAddress = "/run/docker/plugins/sshfs.sock"
 
 type sshfsVolume struct {
-	Password string
-	Sshcmd   string
-	Port     string
+	Password    string
+	Sshcmd      string
+	Port        string
+	SSHAuthSock string
 
 	Options []string
 
@@ -90,6 +91,8 @@ func (d *sshfsDriver) Create(r *volume.CreateRequest) error {
 			v.Password = val
 		case "port":
 			v.Port = val
+		case "sshauthsock":
+			v.SSHAuthSock = val
 		default:
 			if val != "" {
 				v.Options = append(v.Options, key+"="+val)
@@ -245,6 +248,9 @@ func (d *sshfsDriver) mountVolume(v *sshfsVolume) error {
 	if v.Password != "" {
 		cmd.Args = append(cmd.Args, "-o", "workaround=rename", "-o", "password_stdin")
 		cmd.Stdin = strings.NewReader(v.Password)
+	}
+	if v.SSHAuthSock != "" {
+		cmd.Env = append(cmd.Env, "SSH_AUTH_SOCK="+v.SSHAuthSock)
 	}
 
 	for _, option := range v.Options {
