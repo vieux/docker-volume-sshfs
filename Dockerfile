@@ -9,7 +9,7 @@ RUN set -ex \
 CMD ["/go/bin/docker-volume-sshfs"]
 
 FROM alpine
-RUN apk update && apk add sshfs
+RUN apk update && apk add sshfs && apk add --no-cache tini
 RUN mkdir -p /run/docker/plugins /mnt/state /mnt/volumes
 COPY --from=builder /go/bin/docker-volume-sshfs .
 CMD ["docker-volume-sshfs"]
